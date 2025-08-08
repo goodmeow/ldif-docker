@@ -193,12 +193,25 @@
         </div>
 
         <div class="section">
-            <h2><span class="icon">3</span>Create Template</h2>
-            <p>Download a sample Excel template with common LDIF attributes:</p>
-            <button onclick="createTemplate()">Download Excel Template</button>
+            <h2><span class="icon">3</span>Create RFC-Compliant Template</h2>
+            <p>Download a sample Excel template with RFC-standard LDIF attributes:</p>
+            <button onclick="createTemplate()">Download RFC-Compliant Template</button>
+            
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.9em;">
+                <strong>🛡️ LDAP Import Protection:</strong>
+                <ul style="margin: 8px 0; padding-left: 20px;">
+                    <li>Uses only RFC-standard attributes supported by all LDAP servers</li>
+                    <li>Prevents "Undefined attribute type" import errors</li>
+                    <li>Compatible with OpenLDAP, Active Directory, and other LDAP implementations</li>
+                </ul>
+            </div>
             
             <div class="sample-data">
-                <h4>Template includes these common LDIF attributes:</h4>
+                <h4>Template includes RFC-compliant LDAP attributes:</h4>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">
+                    ✅ These attributes are supported by most LDAP servers without additional schemas.<br>
+                    📋 Changed: <code>department</code> → <code>departmentNumber</code>, <code>company</code> → <code>o</code>
+                </p>
                 <div class="table-container">
                     <table class="preview-table">
                         <thead>
@@ -211,22 +224,22 @@
                                 <th>mail</th>
                                 <th>telephoneNumber</th>
                                 <th>title</th>
-                                <th>department</th>
-                                <th>company</th>
+                                <th>departmentNumber</th>
+                                <th>o</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>cn=John Doe,ou=users,dc=example,dc=com</td>
+                                <td>cn=John Smith,ou=users,dc=company,dc=local</td>
                                 <td>inetOrgPerson</td>
-                                <td>John Doe</td>
+                                <td>John Smith</td>
                                 <td>John</td>
-                                <td>Doe</td>
-                                <td>john.doe@example.com</td>
+                                <td>Smith</td>
+                                <td>john.smith@company.local</td>
                                 <td>+1-555-123-4567</td>
                                 <td>Software Engineer</td>
-                                <td>IT</td>
-                                <td>Example Corp</td>
+                                <td>1</td>
+                                <td>Tech Solutions Inc</td>
                             </tr>
                         </tbody>
                     </table>
@@ -240,6 +253,76 @@
                 <div id="previewTable"></div>
             </div>
             <div id="output"></div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📚</span>LDAP Admin Setup Guide</h2>
+            
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107;">
+                <h4>⚠️ Common LDAP Import Errors & Solutions</h4>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Error: "A valid dn line is required"</strong><br>
+                    <span style="color: #666;">Solution: Ensure every entry has a properly formatted DN (Distinguished Name)</span>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Error: "No such object" (LDAP_NO_SUCH_OBJECT)</strong><br>
+                    <span style="color: #666;">Solution: Create parent containers in LDAP Admin first</span>
+                </div>
+            </div>
+
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h4>🔧 Setting up LDAP Directory Structure in LDAP Admin</h4>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 1: Create Domain Component (DC)</strong>
+                    <ol style="margin: 8px 0; padding-left: 20px;">
+                        <li>Right-click on LDAP server → New → Entry</li>
+                        <li>Select "dcObject" and "organization" object classes</li>
+                        <li>Set DN: <code>dc=company,dc=local</code></li>
+                        <li>Add attributes: <code>dc=company</code>, <code>o=company</code></li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 2: Create Organizational Unit (OU)</strong>
+                    <ol style="margin: 8px 0; padding-left: 20px;">
+                        <li>Right-click on <code>dc=company,dc=local</code> → New → Entry</li>
+                        <li>Select "organizationalUnit" object class</li>
+                        <li>Set DN: <code>ou=users,dc=company,dc=local</code></li>
+                        <li>Add attribute: <code>ou=users</code></li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 3: Verify DN Format in Excel</strong>
+                    <ul style="margin: 8px 0; padding-left: 20px;">
+                        <li>✅ Correct: <code>cn=John Smith,ou=users,dc=company,dc=local</code></li>
+                        <li>❌ Wrong: <code>John Smith</code> (missing DN format)</li>
+                        <li>❌ Wrong: <code>cn=John Smith</code> (missing parent containers)</li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 10px; border-radius: 4px; border: 1px dashed #ddd;">
+                    <strong>Example DN Structure:</strong><br>
+                    <code>cn=John Smith,ou=users,dc=company,dc=local</code><br>
+                    <small style="color: #666;">✅ Standard LDAP directory structure format</small>
+                </div>
+            </div>
+
+            <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h4>🎯 Import Order for Success</h4>
+                <ol style="margin: 8px 0; padding-left: 20px;">
+                    <li><strong>First:</strong> Create domain and OU structure in LDAP Admin (manually)</li>
+                    <li><strong>Then:</strong> Import your user LDIF file</li>
+                    <li><strong>Verify:</strong> Check that parent containers exist before importing users</li>
+                </ol>
+                
+                <div style="margin-top: 10px; font-size: 0.9em; color: #0c5460;">
+                    💡 <strong>Pro Tip:</strong> Always create the directory structure manually in LDAP Admin first, then import your user data.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -359,6 +442,155 @@
             }
         }
 
+        function validateLdifAttributes(headers) {
+            // Standard LDAP attributes from core schema and inetOrgPerson (all lowercase for comparison)
+            const standardAttributes = [
+                'dn', 'objectclass', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber',
+                'title', 'o', 'ou', 'departmentnumber', 'employeenumber', 'uid',
+                'userpassword', 'description', 'street', 'l', 'st', 'postalcode', 'c'
+            ];
+            
+            const warnings = [];
+            headers.forEach(header => {
+                const lowerHeader = header.toLowerCase();
+                if (!standardAttributes.includes(lowerHeader)) {
+                    warnings.push(`⚠️ "${header}" may not be supported by all LDAP servers`);
+                }
+            });
+            
+            if (warnings.length > 0) {
+                const warningMsg = "Schema Warning:\n" + warnings.join('\n') + 
+                    "\n\nConsider using standard attributes or ensure your LDAP server has the required schemas loaded.";
+                showStatus(warningMsg, 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function validateLdifData(headers, dataRows) {
+            const errors = [];
+            const dnIndex = headers.findIndex(h => h.toLowerCase() === 'dn');
+            const cnIndex = headers.findIndex(h => h.toLowerCase() === 'cn');
+            const snIndex = headers.findIndex(h => h.toLowerCase() === 'sn');
+            const givenNameIndex = headers.findIndex(h => h.toLowerCase() === 'givenname');
+            const objectClassIndex = headers.findIndex(h => h.toLowerCase() === 'objectclass');
+            const mailIndex = headers.findIndex(h => h.toLowerCase() === 'mail');
+
+            dataRows.forEach((row, index) => {
+                if (!row.some(cell => cell)) return; // Skip empty rows
+
+                const rowNum = index + 2; // +2 because Excel is 1-indexed and we have headers
+
+                // Check required fields
+                if (dnIndex >= 0 && (!row[dnIndex] || !row[dnIndex].toString().trim())) {
+                    errors.push(`Row ${rowNum}: Missing DN (Distinguished Name)`);
+                }
+                
+                if (objectClassIndex >= 0 && (!row[objectClassIndex] || !row[objectClassIndex].toString().trim())) {
+                    errors.push(`Row ${rowNum}: Missing objectClass`);
+                }
+
+                if (cnIndex >= 0 && (!row[cnIndex] || !row[cnIndex].toString().trim())) {
+                    errors.push(`Row ${rowNum}: Missing cn (Common Name)`);
+                }
+
+                // Check name consistency
+                if (cnIndex >= 0 && snIndex >= 0 && givenNameIndex >= 0) {
+                    const cn = row[cnIndex]?.toString().trim();
+                    const sn = row[snIndex]?.toString().trim();
+                    const givenName = row[givenNameIndex]?.toString().trim();
+                    
+                    if (cn && sn && givenName && sn === givenName) {
+                        errors.push(`Row ${rowNum}: sn (surname) "${sn}" should not be the same as givenName "${givenName}"`);
+                    }
+                }
+
+                // Check email format
+                if (mailIndex >= 0 && row[mailIndex]) {
+                    const email = row[mailIndex].toString().trim();
+                    if (email && !email.includes('@')) {
+                        errors.push(`Row ${rowNum}: Invalid email format "${email}"`);
+                    }
+                }
+
+                // Check DN format
+                if (dnIndex >= 0 && row[dnIndex]) {
+                    const dn = row[dnIndex].toString().trim();
+                    if (dn && !dn.includes('=')) {
+                        errors.push(`Row ${rowNum}: Invalid DN format "${dn}" - should contain "=" (e.g., cn=John,ou=users,dc=example,dc=com)`);
+                    } else if (dn && !dn.includes(',')) {
+                        errors.push(`Row ${rowNum}: Incomplete DN "${dn}" - missing parent containers (e.g., cn=John,ou=users,dc=rmh,dc=local)`);
+                    }
+                } else if (dnIndex >= 0) {
+                    errors.push(`Row ${rowNum}: Missing DN (Distinguished Name) - required for LDAP import`);
+                }
+            });
+
+            return errors;
+        }
+
+        function generateParentEntries(headers, dataRows) {
+            const dnIndex = headers.findIndex(h => h.toLowerCase() === 'dn');
+            if (dnIndex === -1) return '';
+
+            const parentDNs = new Set();
+            
+            // Extract all unique parent DNs from the data
+            dataRows.forEach(row => {
+                if (!row.some(cell => cell)) return; // Skip empty rows
+                
+                const dn = row[dnIndex]?.toString().trim();
+                if (!dn) return;
+
+                // Parse DN components
+                const dnParts = dn.split(',').map(part => part.trim());
+                
+                // Generate parent DN hierarchy (skip the first part which is the entry itself)
+                for (let i = 1; i < dnParts.length; i++) {
+                    const parentDN = dnParts.slice(i).join(',');
+                    parentDNs.add(parentDN);
+                }
+            });
+
+            let parentEntries = '';
+            const sortedParents = Array.from(parentDNs).sort((a, b) => {
+                // Sort by depth (fewer commas = higher in hierarchy)
+                return a.split(',').length - b.split(',').length;
+            });
+
+            sortedParents.forEach(parentDN => {
+                const dnParts = parentDN.split(',');
+                const firstComponent = dnParts[0].trim();
+                
+                if (firstComponent.startsWith('dc=')) {
+                    // Domain component
+                    const dcValue = firstComponent.substring(3);
+                    parentEntries += `dn: ${parentDN}\n`;
+                    parentEntries += `objectClass: dcObject\n`;
+                    parentEntries += `objectClass: organization\n`;
+                    parentEntries += `dc: ${dcValue}\n`;
+                    parentEntries += `o: ${dcValue}\n`;
+                    parentEntries += `description: ${dcValue} domain\n\n`;
+                    
+                } else if (firstComponent.startsWith('ou=')) {
+                    // Organizational unit
+                    const ouValue = firstComponent.substring(3);
+                    parentEntries += `dn: ${parentDN}\n`;
+                    parentEntries += `objectClass: organizationalUnit\n`;
+                    parentEntries += `ou: ${ouValue}\n`;
+                    parentEntries += `description: ${ouValue} organizational unit\n\n`;
+                }
+            });
+
+            if (parentEntries) {
+                parentEntries = '# Parent entries (create these first in your LDAP server)\n' + 
+                              '# These entries are required to prevent LDAP_NO_SUCH_OBJECT errors\n\n' + 
+                              parentEntries;
+            }
+
+            return parentEntries;
+        }
+
         function convertExcelToLdif() {
             if (!excelData || excelData.length === 0) return;
             
@@ -366,8 +598,28 @@
                 const headers = excelData[0];
                 const dataRows = excelData.slice(1);
                 
+                // Validate schema compatibility
+                if (!validateLdifAttributes(headers)) {
+                    return; // Stop if there are schema issues
+                }
+
+                // Validate data integrity
+                const dataErrors = validateLdifData(headers, dataRows);
+                if (dataErrors.length > 0) {
+                    const errorMsg = "⚠️ Data Validation Warnings:\n" + dataErrors.join('\n') + 
+                        "\n\n📚 See 'LDAP Admin Setup Guide' below for solutions.\n\nContinuing with LDIF generation...";
+                    showStatus(errorMsg, 'error');
+                    // Don't return - continue with generation but show warnings
+                }
+                
                 let ldifOutput = '';
                 
+                // Generate parent entries first to prevent LDAP_NO_SUCH_OBJECT errors
+                const parentEntries = generateParentEntries(headers, dataRows);
+                if (parentEntries) {
+                    ldifOutput += parentEntries + '\n';
+                }
+
                 dataRows.forEach((row, index) => {
                     if (row.some(cell => cell)) { // Skip empty rows
                         headers.forEach((header, colIndex) => {
@@ -400,7 +652,12 @@
                 URL.revokeObjectURL(url);
                 
                 document.getElementById('output').textContent = ldifOutput;
-                showStatus(`Successfully converted ${dataRows.length} Excel rows to LDIF`, 'success');
+                
+                let statusMsg = `Successfully converted ${dataRows.length} Excel rows to LDIF`;
+                if (parentEntries) {
+                    statusMsg += '\n\n🏗️ Parent entries have been automatically generated to prevent LDAP import errors. Import them first!';
+                }
+                showStatus(statusMsg, 'success');
                 
             } catch (error) {
                 showStatus('Error converting Excel: ' + error.message, 'error');
@@ -409,25 +666,34 @@
 
         function createTemplate() {
             const templateData = [
-                ['dn', 'objectClass', 'cn', 'givenName', 'sn', 'mail', 'telephoneNumber', 'title', 'department', 'company'],
-                ['cn=John Doe,ou=users,dc=example,dc=com', 'inetOrgPerson', 'John Doe', 'John', 'Doe', 'john.doe@example.com', '+1-555-123-4567', 'Software Engineer', 'IT', 'Example Corp'],
-                ['cn=Jane Smith,ou=users,dc=example,dc=com', 'inetOrgPerson', 'Jane Smith', 'Jane', 'Smith', 'jane.smith@example.com', '+1-555-987-6543', 'Project Manager', 'Marketing', 'Example Corp'],
-                ['cn=Bob Johnson,ou=users,dc=example,dc=com', 'inetOrgPerson', 'Bob Johnson', 'Bob', 'Johnson', 'bob.johnson@example.com', '+1-555-456-7890', 'System Administrator', 'IT', 'Example Corp']
+                // RFC-compliant attributes matching LDAP structure
+                ['dn', 'objectClass', 'cn', 'givenName', 'sn', 'mail', 'telephoneNumber', 'title', 'departmentNumber', 'o'],
+                ['cn=John Smith,ou=users,dc=company,dc=local', 'inetOrgPerson', 'John Smith', 'John', 'Smith', 'john.smith@company.local', '+1-555-123-4567', 'Software Engineer', '1', 'Tech Solutions Inc'],
+                ['cn=Sarah Johnson,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Sarah Johnson', 'Sarah', 'Johnson', 'sarah.johnson@company.local', '+1-555-234-5678', 'Project Manager', '2', 'Tech Solutions Inc'],
+                ['cn=Michael Brown,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Michael Brown', 'Michael', 'Brown', 'michael.brown@company.local', '+1-555-345-6789', 'System Administrator', '1', 'Tech Solutions Inc']
             ];
             
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(templateData);
             
-            // Set column widths
+            // Set column widths for RFC-compliant attributes
             ws['!cols'] = [
-                {wch: 40}, {wch: 15}, {wch: 15}, {wch: 12}, {wch: 12}, 
-                {wch: 25}, {wch: 18}, {wch: 20}, {wch: 15}, {wch: 15}
+                {wch: 40}, // dn (Distinguished Name)
+                {wch: 15}, // objectClass
+                {wch: 15}, // cn (Common Name)
+                {wch: 12}, // givenName
+                {wch: 12}, // sn (Surname)
+                {wch: 25}, // mail
+                {wch: 18}, // telephoneNumber
+                {wch: 20}, // title
+                {wch: 18}, // departmentNumber (was department)
+                {wch: 15}  // o (Organization, was company)
             ];
             
-            XLSX.utils.book_append_sheet(wb, ws, 'LDIF Template');
-            XLSX.writeFile(wb, 'ldif_template.xlsx');
+            XLSX.utils.book_append_sheet(wb, ws, 'RFC-Compliant LDIF Template');
+            XLSX.writeFile(wb, 'ldif_rfc_template.xlsx');
             
-            showStatus('Template downloaded successfully!', 'success');
+            showStatus('RFC-compliant template downloaded successfully! This template uses standard LDAP attributes to prevent import errors.', 'success');
         }
 
         function showPreview(data) {
