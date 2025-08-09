@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDAP Admin Setup Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(222, 226, 230, 0.5);
+        }
+        button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LDAP Admin Setup Guide</h1>
+
+        <div class="section">
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107;">
+                <h4>⚠️ Common LDAP Import Errors & Solutions</h4>
+
+                <div style="margin: 15px 0;">
+                    <strong>Error: "A valid dn line is required"</strong><br>
+                    <span style="color: #666;">Solution: Ensure every entry has a properly formatted DN (Distinguished Name)</span>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <strong>Error: "No such object" (LDAP_NO_SUCH_OBJECT)</strong><br>
+                    <span style="color: #666;">Solution: Create parent containers in LDAP Admin first</span>
+                </div>
+            </div>
+
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h4>🔧 Setting up LDAP Directory Structure in LDAP Admin</h4>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 1: Create Domain Component (DC)</strong>
+                    <ol style="margin: 8px 0; padding-left: 20px;">
+                        <li>Right-click on LDAP server → New → Entry</li>
+                        <li>Select "dcObject" and "organization" object classes</li>
+                        <li>Set DN: <code>dc=company,dc=local</code></li>
+                        <li>Add attributes: <code>dc=company</code>, <code>o=company</code></li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 2: Create Organizational Unit (OU)</strong>
+                    <ol style="margin: 8px 0; padding-left: 20px;">
+                        <li>Right-click on <code>dc=company,dc=local</code> → New → Entry</li>
+                        <li>Select "organizationalUnit" object class</li>
+                        <li>Set DN: <code>ou=users,dc=company,dc=local</code></li>
+                        <li>Add attribute: <code>ou=users</code></li>
+                    </ol>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <strong>Step 3: Verify DN Format in Excel</strong>
+                    <ul style="margin: 8px 0; padding-left: 20px;">
+                        <li>✅ Correct: <code>cn=John Smith,ou=users,dc=company,dc=local</code></li>
+                        <li>❌ Wrong: <code>John Smith</code> (missing DN format)</li>
+                        <li>❌ Wrong: <code>cn=John Smith</code> (missing parent containers)</li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 10px; border-radius: 4px; border: 1px dashed #ddd;">
+                    <strong>Example DN Structure:</strong><br>
+                    <code>cn=John Smith,ou=users,dc=company,dc=local</code><br>
+                    <small style="color: #666;">✅ Standard LDAP directory structure format</small>
+                </div>
+            </div>
+
+            <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h4>🎯 Import Order for Success</h4>
+                <ol style="margin: 8px 0; padding-left: 20px;">
+                    <li><strong>First:</strong> Create domain and OU structure in LDAP Admin (manually)</li>
+                    <li><strong>Then:</strong> Import your user LDIF file</li>
+                    <li><strong>Verify:</strong> Check that parent containers exist before importing users</li>
+                </ol>
+
+                <div style="margin-top: 10px; font-size: 0.9em; color: #0c5460;">
+                    💡 <strong>Pro Tip:</strong> Always create the directory structure manually in LDAP Admin first, then import your user data.
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="window.location.href='../index.html'">← Back</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -8,6 +8,7 @@
 - Restart services: `docker compose restart`
 - Health check: `curl http://localhost:8080/health`
 - Setup script: `./setup.sh` (automated setup with Docker checks)
+- Setup guide: [docs/setup.html](docs/setup.html)
 
 ## Architecture
 - **Main App**: Apache2-based web server serving LDIF ↔ Excel converter
