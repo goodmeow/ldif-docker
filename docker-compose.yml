@@ -4,31 +4,55 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"  # Bind only to localhost for security
     container_name: ldif-converter
     restart: unless-stopped
     volumes:
-      # Mount the HTML files for easy development
+      # Mount the HTML files for easy development (read-only)
       - ./index.html:/usr/local/apache2/htdocs/index.html:ro
       - ./ldap-tutorial.html:/usr/local/apache2/htdocs/ldap-tutorial.html:ro
       - ./features.html:/usr/local/apache2/htdocs/features.html:ro
       - ./health.html:/usr/local/apache2/htdocs/health.html:ro
-      # Mount Apache config if it exists
+      # Mount Apache config (read-only)
       - ./httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      # Create tmpfs for temporary files (security)
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 100M
+          mode: 1777
     environment:
-      - APACHE_RUN_USER=apache-user
-      - APACHE_RUN_GROUP=apache-user
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
       - APACHE_LOG_DIR=/usr/local/apache2/logs
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "--timeout=5", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 10s
+    # Basic security constraints that don't break functionality
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nproc: 1024
+      nofile:
+        soft: 1024
+        hard: 2048
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
     labels:
-      - "com.example.description=LDIF to Excel Converter (Apache)"
-      - "com.example.version=1.0"
+      - "com.example.description=LDIF to Excel Converter (Apache) - Hardened"
+      - "com.example.version=1.1"
       - "com.example.webserver=apache2"
+      - "com.example.security=hardened"
     networks:
       - ldif-network
 
