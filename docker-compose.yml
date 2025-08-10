@@ -8,8 +8,10 @@ services:
     container_name: ldif-converter
     restart: unless-stopped
     volumes:
-      # Mount the HTML file for easy development
+      # Mount the HTML files for easy development
       - ./index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./ldap-tutorial.html:/usr/local/apache2/htdocs/ldap-tutorial.html:ro
+      - ./health.html:/usr/local/apache2/htdocs/health.html:ro
       # Mount Apache config if it exists
       - ./httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
     environment:

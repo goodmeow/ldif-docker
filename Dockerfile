@@ -10,6 +10,7 @@ RUN apk add --no-cache \
 # Copy the HTML files to Apache document root
 COPY index.html /usr/local/apache2/htdocs/
 COPY health.html /usr/local/apache2/htdocs/
+COPY ldap-tutorial.html /usr/local/apache2/htdocs/
 
 # Copy custom Apache config
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
