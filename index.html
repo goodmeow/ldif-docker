@@ -811,35 +811,64 @@
         }
 
         function createTemplate() {
-            const templateData = [
-                // RFC-compliant attributes matching LDAP structure
-                ['dn', 'objectClass', 'cn', 'givenName', 'sn', 'mail', 'telephoneNumber', 'title', 'departmentNumber', 'o'],
-                ['cn=John Smith,ou=users,dc=company,dc=local', 'inetOrgPerson', 'John Smith', 'John', 'Smith', 'john.smith@company.local', '+1-555-123-4567', 'Software Engineer', '1', 'Tech Solutions Inc'],
-                ['cn=Sarah Johnson,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Sarah Johnson', 'Sarah', 'Johnson', 'sarah.johnson@company.local', '+1-555-234-5678', 'Project Manager', '2', 'Tech Solutions Inc'],
-                ['cn=Michael Brown,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Michael Brown', 'Michael', 'Brown', 'michael.brown@company.local', '+1-555-345-6789', 'System Administrator', '1', 'Tech Solutions Inc']
-            ];
-            
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-            
-            // Set column widths for RFC-compliant attributes
-            ws['!cols'] = [
-                {wch: 40}, // dn (Distinguished Name)
-                {wch: 15}, // objectClass
-                {wch: 15}, // cn (Common Name)
-                {wch: 12}, // givenName
-                {wch: 12}, // sn (Surname)
-                {wch: 25}, // mail
-                {wch: 18}, // telephoneNumber
-                {wch: 20}, // title
-                {wch: 18}, // departmentNumber (was department)
-                {wch: 15}  // o (Organization, was company)
-            ];
-            
-            XLSX.utils.book_append_sheet(wb, ws, 'RFC-Compliant LDIF Template');
-            XLSX.writeFile(wb, 'ldif_rfc_template.xlsx');
-            
-            showStatus('RFC-compliant template downloaded successfully! This template uses standard LDAP attributes to prevent import errors.', 'success');
+            try {
+                // Check if XLSX library is loaded
+                if (typeof XLSX === 'undefined') {
+                    showStatus('❌ Error: XLSX library is not loaded. Please refresh the page and try again. If the problem persists, check your internet connection or browser console for errors.', 'error');
+                    console.error('XLSX library is not available. Check if the CDN is accessible.');
+                    return;
+                }
+
+                console.log('Creating RFC-compliant LDIF template...');
+                
+                const templateData = [
+                    // RFC-compliant attributes matching LDAP structure
+                    ['dn', 'objectClass', 'cn', 'givenName', 'sn', 'mail', 'telephoneNumber', 'title', 'departmentNumber', 'o'],
+                    ['cn=John Smith,ou=users,dc=company,dc=local', 'inetOrgPerson', 'John Smith', 'John', 'Smith', 'john.smith@company.local', '+1-555-123-4567', 'Software Engineer', '1', 'Tech Solutions Inc'],
+                    ['cn=Sarah Johnson,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Sarah Johnson', 'Sarah', 'Johnson', 'sarah.johnson@company.local', '+1-555-234-5678', 'Project Manager', '2', 'Tech Solutions Inc'],
+                    ['cn=Michael Brown,ou=users,dc=company,dc=local', 'inetOrgPerson', 'Michael Brown', 'Michael', 'Brown', 'michael.brown@company.local', '+1-555-345-6789', 'System Administrator', '1', 'Tech Solutions Inc']
+                ];
+                
+                console.log('Template data prepared, creating workbook...');
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(templateData);
+                
+                // Set column widths for RFC-compliant attributes
+                ws['!cols'] = [
+                    {wch: 40}, // dn (Distinguished Name)
+                    {wch: 15}, // objectClass
+                    {wch: 15}, // cn (Common Name)
+                    {wch: 12}, // givenName
+                    {wch: 12}, // sn (Surname)
+                    {wch: 25}, // mail
+                    {wch: 18}, // telephoneNumber
+                    {wch: 20}, // title
+                    {wch: 18}, // departmentNumber (was department)
+                    {wch: 15}  // o (Organization, was company)
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'RFC-Compliant LDIF Template');
+                
+                console.log('Workbook created, initiating download...');
+                XLSX.writeFile(wb, 'ldif_rfc_template.xlsx');
+                
+                showStatus('✅ RFC-compliant template downloaded successfully! This template uses standard LDAP attributes to prevent import errors.', 'success');
+                console.log('Template download completed successfully.');
+                
+            } catch (error) {
+                const errorMsg = `❌ Error creating template: ${error.message}`;
+                showStatus(errorMsg, 'error');
+                console.error('Template creation error:', error);
+                console.error('Error stack:', error.stack);
+                
+                // Additional debugging information
+                console.log('Browser info:', navigator.userAgent);
+                console.log('XLSX available:', typeof XLSX !== 'undefined');
+                if (typeof XLSX !== 'undefined') {
+                    console.log('XLSX version:', XLSX.version);
+                }
+            }
         }
 
         function showPreview(data) {
@@ -1093,6 +1122,40 @@
             
             batchResultsList.innerHTML = html;
         }
+
+        // Check XLSX library loading on page load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking XLSX library...');
+            if (typeof XLSX !== 'undefined') {
+                console.log('✅ XLSX library loaded successfully. Version:', XLSX.version || 'unknown');
+                // Update the template button to show it's ready
+                const templateButton = document.querySelector('button[onclick="createTemplate()"]');
+                if (templateButton && !templateButton.textContent.includes('✅')) {
+                    templateButton.textContent = '✅ ' + templateButton.textContent;
+                    templateButton.style.background = '#28a745';
+                }
+            } else {
+                console.error('❌ XLSX library failed to load. Template download will not work.');
+                // Update the template button to show there's an issue
+                const templateButton = document.querySelector('button[onclick="createTemplate()"]');
+                if (templateButton) {
+                    templateButton.textContent = '❌ ' + templateButton.textContent + ' (Library Error)';
+                    templateButton.style.background = '#dc3545';
+                    templateButton.disabled = true;
+                }
+                
+                // Show error message
+                showStatus('❌ XLSX library failed to load. Please check your internet connection and refresh the page. If the problem persists, check browser console for details.', 'error');
+            }
+        });
+
+        // Additional error handling for script loading
+        window.addEventListener('error', function(e) {
+            if (e.filename && e.filename.includes('xlsx')) {
+                console.error('XLSX library loading error:', e);
+                showStatus('❌ Failed to load XLSX library from CDN. Please check your internet connection.', 'error');
+            }
+        });
     </script>
 </body>
 </html>
