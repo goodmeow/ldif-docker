@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete LDAP Admin Setup & Directory Structure Tutorial</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h2 {
+            color: #495057;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        h3 {
+            color: #495057;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h4 {
+            color: #495057;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 12px;
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(222, 226, 230, 0.5);
+        }
+        .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .small-icon {
+            width: 24px;
+            height: 24px;
+            font-size: 1em;
+        }
+        .warning-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .info-box {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .success-box {
+            background: #d1ecf1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        .error-box {
+            background: #f8d7da;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -15px;
+            top: 15px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .step-list li strong {
+            color: #495057;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .nav-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 10px 10px 10px 0;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .tutorial-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin: 0;
+        }
+        .tutorial-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .tutorial-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+        .tutorial-table tr:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        .checklist li::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+        .error-list li::before {
+            content: "❌";
+        }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: 8px;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+        }
+        .toc a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Complete LDAP Admin Setup & Directory Structure Tutorial</h1>
+        
+        <div class="nav-button" style="text-align: center; margin-bottom: 30px;">
+            <a href="index.html" class="nav-button">← Back to LDIF Converter</a>
+        </div>
+
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <ul>
+                <li><a href="#overview">1. Overview & Prerequisites</a></li>
+                <li><a href="#common-errors">2. Common LDAP Import Errors</a></li>
+                <li><a href="#directory-structure">3. Setting up LDAP Directory Structure</a></li>
+                <li><a href="#ldap-admin-setup">4. LDAP Admin Configuration</a></li>
+                <li><a href="#import-process">5. Step-by-Step Import Process</a></li>
+                <li><a href="#troubleshooting">6. Advanced Troubleshooting</a></li>
+                <li><a href="#best-practices">7. Best Practices & Security</a></li>
+                <li><a href="#schema-management">8. Schema Management</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="overview">
+            <h2><span class="icon">1</span>Overview & Prerequisites</h2>
+            
+            <h3><span class="icon small-icon">📋</span>What You'll Learn</h3>
+            <p>This comprehensive tutorial covers everything you need to know about setting up LDAP directory structures and using LDAP Admin for successful data imports. By the end of this guide, you'll be able to:</p>
+            
+            <ul class="checklist">
+                <li>Understand LDAP directory hierarchy and DN structure</li>
+                <li>Set up proper directory containers in LDAP Admin</li>
+                <li>Avoid common import errors and troubleshoot issues</li>
+                <li>Implement security best practices</li>
+                <li>Manage LDAP schemas effectively</li>
+            </ul>
+
+            <h3><span class="icon small-icon">⚙️</span>Prerequisites</h3>
+            <div class="info-box">
+                <h4>Required Software:</h4>
+                <ul>
+                    <li><strong>LDAP Server:</strong> OpenLDAP, Active Directory, or similar</li>
+                    <li><strong>LDAP Admin:</strong> Download from <a href="http://www.ldapadmin.org/" target="_blank">ldapadmin.org</a></li>
+                    <li><strong>Administrative Access:</strong> LDAP server admin credentials</li>
+                    <li><strong>Network Access:</strong> Connection to LDAP server (usually port 389 or 636)</li>
+                </ul>
+            </div>
+
+            <h3><span class="icon small-icon">🏗️</span>LDAP Directory Hierarchy Basics</h3>
+            <p>LDAP uses a hierarchical tree structure similar to a file system. Understanding this hierarchy is crucial for successful imports:</p>
+            
+            <div class="code-block">
+dc=company,dc=local                    (Domain Component - Root)
+├── ou=users,dc=company,dc=local       (Organizational Unit - Container)
+│   ├── cn=John Smith,ou=users,dc=company,dc=local    (User Entry)
+│   └── cn=Jane Doe,ou=users,dc=company,dc=local      (User Entry)
+└── ou=groups,dc=company,dc=local      (Organizational Unit - Container)
+    └── cn=Administrators,ou=groups,dc=company,dc=local (Group Entry)
+            </div>
+        </div>
+
+        <div class="section" id="common-errors">
+            <h2><span class="icon">2</span>Common LDAP Import Errors & Solutions</h2>
+            
+            <div class="error-box">
+                <h3>🚨 Most Frequent Import Errors</h3>
+                
+                <h4>Error: "A valid dn line is required"</h4>
+                <p><strong>Cause:</strong> Missing or malformed Distinguished Name (DN) in your LDIF data.</p>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Ensure every entry has a DN field</li>
+                    <li>DN format: <code>cn=John Smith,ou=users,dc=company,dc=local</code></li>
+                    <li>Check for typos in DN syntax (missing commas, equals signs)</li>
+                </ul>
+                
+                <h4>Error: "No such object" (LDAP_NO_SUCH_OBJECT)</h4>
+                <p><strong>Cause:</strong> Parent containers don't exist in the LDAP directory.</p>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Create parent containers (DC and OU) before importing users</li>
+                    <li>Import in hierarchical order: Domain → OUs → Users</li>
+                    <li>Use LDAP Admin to manually create the directory structure first</li>
+                </ul>
+                
+                <h4>Error: "Undefined attribute type"</h4>
+                <p><strong>Cause:</strong> Using non-standard LDAP attributes not supported by your server's schema.</p>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Use RFC-compliant attributes (cn, sn, givenName, mail, etc.)</li>
+                    <li>Load additional schemas if custom attributes are needed</li>
+                    <li>Replace custom attributes with standard ones (e.g., department → departmentNumber)</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Data Validation Checklist</h4>
+                <p>Before importing, verify your data meets these requirements:</p>
+                <ul class="checklist">
+                    <li>Every entry has a unique, properly formatted DN</li>
+                    <li>All required attributes are present (cn, objectClass, sn for users)</li>
+                    <li>Email addresses contain @ symbol</li>
+                    <li>Phone numbers follow consistent format</li>
+                    <li>No duplicate DNs in the dataset</li>
+                    <li>Parent containers exist in LDAP directory</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="directory-structure">
+            <h2><span class="icon">3</span>Setting up LDAP Directory Structure</h2>
+            
+            <h3><span class="icon small-icon">🏗️</span>Planning Your Directory Structure</h3>
+            <p>Before creating entries in LDAP Admin, plan your directory structure based on your organization's needs:</p>
+            
+            <div class="table-container">
+                <table class="tutorial-table">
+                    <thead>
+                        <tr>
+                            <th>Component Type</th>
+                            <th>Purpose</th>
+                            <th>Example DN</th>
+                            <th>When to Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Domain Component (dc)</strong></td>
+                            <td>Root of directory tree</td>
+                            <td>dc=company,dc=local</td>
+                            <td>Always required as root</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Organizational Unit (ou)</strong></td>
+                            <td>Container for organizing entries</td>
+                            <td>ou=users,dc=company,dc=local</td>
+                            <td>Group similar entries (users, groups, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Common Name (cn)</strong></td>
+                            <td>Individual entries (users, groups)</td>
+                            <td>cn=John Smith,ou=users,dc=company,dc=local</td>
+                            <td>Actual data entries</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User ID (uid)</strong></td>
+                            <td>Alternative to cn for users</td>
+                            <td>uid=jsmith,ou=users,dc=company,dc=local</td>
+                            <td>When using unique user IDs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="icon small-icon">📐</span>Recommended Directory Layouts</h3>
+            
+            <h4>Simple Organization Structure:</h4>
+            <div class="code-block">
+dc=company,dc=local
+├── ou=users,dc=company,dc=local
+├── ou=groups,dc=company,dc=local
+└── ou=services,dc=company,dc=local
+            </div>
+            
+            <h4>Department-Based Structure:</h4>
+            <div class="code-block">
+dc=company,dc=local
+├── ou=people,dc=company,dc=local
+│   ├── ou=engineering,ou=people,dc=company,dc=local
+│   ├── ou=marketing,ou=people,dc=company,dc=local
+│   └── ou=sales,ou=people,dc=company,dc=local
+├── ou=groups,dc=company,dc=local
+└── ou=applications,dc=company,dc=local
+            </div>
+            
+            <h4>Location-Based Structure:</h4>
+            <div class="code-block">
+dc=company,dc=local
+├── ou=newyork,dc=company,dc=local
+│   ├── ou=users,ou=newyork,dc=company,dc=local
+│   └── ou=groups,ou=newyork,dc=company,dc=local
+└── ou=london,dc=company,dc=local
+    ├── ou=users,ou=london,dc=company,dc=local
+    └── ou=groups,ou=london,dc=company,dc=local
+            </div>
+        </div>
+
+        <div class="section" id="ldap-admin-setup">
+            <h2><span class="icon">4</span>LDAP Admin Configuration & Setup</h2>
+            
+            <h3><span class="icon small-icon">🔌</span>Connecting to Your LDAP Server</h3>
+            <ol class="step-list">
+                <li>
+                    <strong>Launch LDAP Admin</strong>
+                    <p>Open LDAP Admin application on your computer.</p>
+                </li>
+                <li>
+                    <strong>Create New Connection</strong>
+                    <p>Go to <code>Connection → New</code> or click the "New Connection" button.</p>
+                </li>
+                <li>
+                    <strong>Configure Connection Settings</strong>
+                    <div class="table-container">
+                        <table class="tutorial-table">
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Description</th>
+                                    <th>Example Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Connection Name</td>
+                                    <td>Friendly name for this connection</td>
+                                    <td>Company LDAP Server</td>
+                                </tr>
+                                <tr>
+                                    <td>Host</td>
+                                    <td>LDAP server IP or hostname</td>
+                                    <td>192.168.1.100 or ldap.company.local</td>
+                                </tr>
+                                <tr>
+                                    <td>Port</td>
+                                    <td>LDAP port (389 standard, 636 SSL)</td>
+                                    <td>389 (or 636 for LDAPS)</td>
+                                </tr>
+                                <tr>
+                                    <td>Base DN</td>
+                                    <td>Root of your directory tree</td>
+                                    <td>dc=company,dc=local</td>
+                                </tr>
+                                <tr>
+                                    <td>Username</td>
+                                    <td>Admin user DN</td>
+                                    <td>cn=admin,dc=company,dc=local</td>
+                                </tr>
+                                <tr>
+                                    <td>Password</td>
+                                    <td>Admin password</td>
+                                    <td>[Your admin password]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+                <li>
+                    <strong>Test Connection</strong>
+                    <p>Click "Test Connection" to verify settings before saving.</p>
+                </li>
+            </ol>
+
+            <h3><span class="icon small-icon">🏗️</span>Creating Directory Structure in LDAP Admin</h3>
+            
+            <h4>Step 1: Create Domain Component (DC)</h4>
+            <ol class="step-list">
+                <li>
+                    <strong>Right-click on LDAP Server Root</strong>
+                    <p>In the left panel, right-click on your LDAP server connection.</p>
+                </li>
+                <li>
+                    <strong>Select New → Entry</strong>
+                    <p>Choose to create a new directory entry.</p>
+                </li>
+                <li>
+                    <strong>Choose Object Classes</strong>
+                    <p>Select the following object classes:</p>
+                    <ul>
+                        <li><code>dcObject</code> - Required for domain components</li>
+                        <li><code>organization</code> - Provides organizational attributes</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Set Distinguished Name (DN)</strong>
+                    <p>Enter: <code>dc=company,dc=local</code></p>
+                </li>
+                <li>
+                    <strong>Add Required Attributes</strong>
+                    <div class="table-container">
+                        <table class="tutorial-table">
+                            <thead>
+                                <tr>
+                                    <th>Attribute</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dc</td>
+                                    <td>company</td>
+                                    <td>Domain component name</td>
+                                </tr>
+                                <tr>
+                                    <td>o</td>
+                                    <td>Company Name Inc</td>
+                                    <td>Organization name</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>Company LDAP Directory</td>
+                                    <td>Optional description</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            </ol>
+
+            <h4>Step 2: Create Organizational Unit (OU)</h4>
+            <ol class="step-list">
+                <li>
+                    <strong>Right-click on Domain Component</strong>
+                    <p>Right-click on the <code>dc=company,dc=local</code> entry you just created.</p>
+                </li>
+                <li>
+                    <strong>Select New → Entry</strong>
+                    <p>Create a new child entry.</p>
+                </li>
+                <li>
+                    <strong>Choose Object Class</strong>
+                    <p>Select <code>organizationalUnit</code> object class.</p>
+                </li>
+                <li>
+                    <strong>Set Distinguished Name</strong>
+                    <p>Enter: <code>ou=users,dc=company,dc=local</code></p>
+                </li>
+                <li>
+                    <strong>Add Required Attributes</strong>
+                    <div class="table-container">
+                        <table class="tutorial-table">
+                            <thead>
+                                <tr>
+                                    <th>Attribute</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ou</td>
+                                    <td>users</td>
+                                    <td>Organizational unit name</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>User accounts container</td>
+                                    <td>Optional description</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            </ol>
+
+            <div class="success-box">
+                <h4>✅ Verification Steps</h4>
+                <p>After creating your directory structure, verify it's correct:</p>
+                <ol>
+                    <li>Expand the directory tree in LDAP Admin</li>
+                    <li>Confirm you can see: <code>dc=company,dc=local</code> → <code>ou=users</code></li>
+                    <li>Right-click on entries to view their properties</li>
+                    <li>Check that all required attributes are present</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="import-process">
+            <h2><span class="icon">5</span>Step-by-Step Import Process</h2>
+            
+            <h3><span class="icon small-icon">📋</span>Pre-Import Checklist</h3>
+            <div class="info-box">
+                <h4>Before importing your LDIF file, ensure:</h4>
+                <ul class="checklist">
+                    <li>Directory structure exists in LDAP Admin (DC and OUs created)</li>
+                    <li>LDIF file uses RFC-compliant attributes</li>
+                    <li>All DNs reference existing parent containers</li>
+                    <li>No duplicate entries in your data</li>
+                    <li>Required attributes are present for each entry</li>
+                    <li>You have a backup of your LDAP directory</li>
+                </ul>
+            </div>
+
+            <h3><span class="icon small-icon">📥</span>Importing LDIF Files</h3>
+            <ol class="step-list">
+                <li>
+                    <strong>Open Import Dialog</strong>
+                    <p>In LDAP Admin, go to <code>Tools → Import → LDIF Import</code></p>
+                </li>
+                <li>
+                    <strong>Select LDIF File</strong>
+                    <p>Browse and select your converted LDIF file from the LDIF converter.</p>
+                </li>
+                <li>
+                    <strong>Configure Import Options</strong>
+                    <div class="table-container">
+                        <table class="tutorial-table">
+                            <thead>
+                                <tr>
+                                    <th>Option</th>
+                                    <th>Recommended Setting</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Import Mode</td>
+                                    <td>Add new entries</td>
+                                    <td>Creates new entries, fails if DN exists</td>
+                                </tr>
+                                <tr>
+                                    <td>Error Handling</td>
+                                    <td>Stop on first error</td>
+                                    <td>Helps identify and fix issues quickly</td>
+                                </tr>
+                                <tr>
+                                    <td>Log Level</td>
+                                    <td>Detailed</td>
+                                    <td>Provides comprehensive import feedback</td>
+                                </tr>
+                                <tr>
+                                    <td>Validate DN</td>
+                                    <td>Enabled</td>
+                                    <td>Checks DN format before import</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+                <li>
+                    <strong>Review Import Preview</strong>
+                    <p>If available, review the import preview to verify entries look correct.</p>
+                </li>
+                <li>
+                    <strong>Execute Import</strong>
+                    <p>Click "Import" to begin the process. Monitor the progress and log messages.</p>
+                </li>
+                <li>
+                    <strong>Verify Results</strong>
+                    <p>After import completion:</p>
+                    <ul>
+                        <li>Check the import log for any errors or warnings</li>
+                        <li>Refresh the directory tree in LDAP Admin</li>
+                        <li>Verify that entries appear under the correct OUs</li>
+                        <li>Spot-check a few entries to ensure attributes imported correctly</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3><span class="icon small-icon">🔍</span>Post-Import Verification</h3>
+            <div class="success-box">
+                <h4>Verification Checklist:</h4>
+                <ul class="checklist">
+                    <li>All entries imported successfully (check import log)</li>
+                    <li>Entries appear in correct organizational units</li>
+                    <li>Required attributes are populated (cn, sn, mail, etc.)</li>
+                    <li>DN format is correct and consistent</li>
+                    <li>No duplicate entries created</li>
+                    <li>Search functionality works (try searching for a user)</li>
+                    <li>Authentication works (if applicable)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="troubleshooting">
+            <h2><span class="icon">6</span>Advanced Troubleshooting</h2>
+            
+            <h3><span class="icon small-icon">🔧</span>Common Import Issues & Solutions</h3>
+            
+            <div class="error-box">
+                <h4>Issue: "Invalid DN syntax"</h4>
+                <p><strong>Symptoms:</strong> Import fails with DN format errors</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Check for special characters in DN components</li>
+                    <li>Ensure proper escaping of commas, quotes, and backslashes</li>
+                    <li>Verify DN components are in correct order (most specific first)</li>
+                    <li>Use DN validation tools before import</li>
+                </ul>
+                <div class="code-block">
+# Correct DN format:
+cn=John Smith,ou=users,dc=company,dc=local
+
+# Common mistakes:
+cn="John Smith",ou=users,dc=company,dc=local  # Unnecessary quotes
+cn=John Smith ou=users dc=company dc=local    # Missing commas
+ou=users,cn=John Smith,dc=company,dc=local    # Wrong order
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>Issue: "Constraint violation"</h4>
+                <p><strong>Symptoms:</strong>
+Import fails due to schema or data constraints</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Check required attributes for the object class</li>
+                    <li>Verify attribute value formats (email, phone, etc.)</li>
+                    <li>Ensure unique attributes don't have duplicates</li>
+                    <li>Review schema requirements for your LDAP server</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h4>Issue: "Server is unwilling to perform"</h4>
+                <p><strong>Symptoms:</strong> LDAP server rejects the operation</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Check LDAP server access controls and permissions</li>
+                    <li>Verify you're using an administrative account</li>
+                    <li>Review server logs for specific error details</li>
+                    <li>Ensure the operation is allowed by server configuration</li>
+                </ul>
+            </div>
+
+            <h3><span class="icon small-icon">🔍</span>Debugging Tools & Techniques</h3>
+            
+            <h4>LDAP Admin Built-in Tools:</h4>
+            <ul>
+                <li><strong>Schema Browser:</strong> View → Schema Browser to check available attributes</li>
+                <li><strong>Search Function:</strong> Tools → Search to verify imported data</li>
+                <li><strong>Export Function:</strong> Tools → Export to backup before changes</li>
+                <li><strong>Log Viewer:</strong> View → Log to see detailed operation logs</li>
+            </ul>
+
+            <h4>Command Line Tools:</h4>
+            <div class="code-block">
+# Test LDAP connection
+ldapsearch -x -H ldap://server:389 -D "cn=admin,dc=company,dc=local" -W
+
+# Search for specific entry
+ldapsearch -x -H ldap://server:389 -D "cn=admin,dc=company,dc=local" -W -b "dc=company,dc=local" "(cn=John Smith)"
+
+# Validate LDIF file syntax
+ldapmodify -n -f your_file.ldif
+            </div>
+        </div>
+
+        <div class="section" id="best-practices">
+            <h2><span class="icon">7</span>Best Practices & Security</h2>
+            
+            <h3><span class="icon small-icon">🔒</span>Security Best Practices</h3>
+            
+            <div class="warning-box">
+                <h4>⚠️ Security Considerations</h4>
+                <ul>
+                    <li><strong>Use LDAPS (SSL/TLS):</strong> Always encrypt LDAP communications</li>
+                    <li><strong>Strong Admin Passwords:</strong> Use complex passwords for admin accounts</li>
+                    <li><strong>Access Controls:</strong> Implement proper ACLs to restrict access</li>
+                    <li><strong>Regular Backups:</strong> Backup LDAP directory before major changes</li>
+                    <li><strong>Audit Logging:</strong> Enable and monitor LDAP access logs</li>
+                </ul>
+            </div>
+
+            <h3><span class="icon small-icon">📊</span>Performance Optimization</h3>
+            
+            <h4>Directory Design:</h4>
+            <ul>
+                <li><strong>Flat vs. Deep Hierarchies:</strong> Balance organization with search performance</li>
+                <li><strong>Indexing:</strong> Create indexes on frequently searched attributes</li>
+                <li><strong>Batch Operations:</strong> Import large datasets in smaller batches</li>
+                <li><strong>Connection Pooling:</strong> Use connection pooling for applications</li>
+            </ul>
+
+            <h4>Data Management:</h4>
+            <ul>
+                <li><strong>Consistent Naming:</strong> Use consistent DN naming conventions</li>
+                <li><strong>Data Validation:</strong> Validate data before import</li>
+                <li><strong>Regular Cleanup:</strong> Remove obsolete entries periodically</li>
+                <li><strong>Monitoring:</strong> Monitor directory size and performance</li>
+            </ul>
+
+            <h3><span class="icon small-icon">📋</span>Maintenance Checklist</h3>
+            
+            <div class="success-box">
+                <h4>Weekly Tasks:</h4>
+                <ul class="checklist">
+                    <li>Review LDAP server logs for errors</li>
+                    <li>Check disk space usage</li>
+                    <li>Verify backup completion</li>
+                    <li>Monitor connection counts</li>
+                </ul>
+                
+                <h4>Monthly Tasks:</h4>
+                <ul class="checklist">
+                    <li>Review and update access controls</li>
+                    <li>Audit user accounts for inactive entries</li>
+                    <li>Update schema if needed</li>
+                    <li>Performance tuning review</li>
+                </ul>
+                
+                <h4>Quarterly Tasks:</h4>
+                <ul class="checklist">
+                    <li>Full directory backup and restore test</li>
+                    <li>Security audit and penetration testing</li>
+                    <li>Directory structure optimization review</li>
+                    <li>Documentation updates</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="schema-management">
+            <h2><span class="icon">8</span>Schema Management</h2>
+            
+            <h3><span class="icon small-icon">📚</span>Understanding LDAP Schemas</h3>
+            <p>LDAP schemas define the structure and rules for directory entries. Understanding schemas is crucial for successful imports and directory management.</p>
+
+            <h4>Core Schema Components:</h4>
+            <div class="table-container">
+                <table class="tutorial-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Object Classes</strong></td>
+                            <td>Define entry types and required/optional attributes</td>
+                            <td>inetOrgPerson, organizationalUnit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Attributes</strong></td>
+                            <td>Define data fields and their properties</td>
+                            <td>cn, mail, telephoneNumber</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Syntax Rules</strong></td>
+                            <td>Define data format and validation rules</td>
+                            <td>Email format, phone number format</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="icon small-icon">🔧</span>RFC-Compliant Attributes</h3>
+            <p>Use these standard attributes to ensure compatibility across LDAP implementations:</p>
+            
+            <div class="table-container">
+                <table class="tutorial-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Example Value</th>
+                            <th>Required For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>dn</td>
+                            <td>Distinguished Name (unique identifier)</td>
+                            <td>cn=John Smith,ou=users,dc=company,dc=local</td>
+                            <td>All entries</td>
+                        </tr>
+                        <tr>
+                            <td>objectClass</td>
+                            <td>Defines entry type and available attributes</td>
+                            <td>inetOrgPerson</td>
+                            <td>All entries</td>
+                        </tr>
+                        <tr>
+                            <td>cn</td>
+                            <td>Common Name</td>
+                            <td>John Smith</td>
+                            <td>Most entries</td>
+                        </tr>
+                        <tr>
+                            <td>sn</td>
+                            <td>Surname (last name)</td>
+                            <td>Smith</td>
+                            <td>Person entries</td>
+                        </tr>
+                        <tr>
+                            <td>givenName</td>
+                            <td>First name</td>
+                            <td>John</td>
+                            <td>Person entries</td>
+                        </tr>
+                        <tr>
+                            <td>mail</td>
+                            <td>Email address</td>
+                            <td>john.smith@company.com</td>
+                            <td>Optional</td>
+                        </tr>
+                        <tr>
+                            <td>telephoneNumber</td>
+                            <td>Phone number</td>
+                            <td>+1-555-123-4567</td>
+                            <td>Optional</td>
+                        </tr>
+                        <tr>
+                            <td>title</td>
+                            <td>Job title</td>
+                            <td>Software Engineer</td>
+                            <td>Optional</td>
+                        </tr>
+                        <tr>
+                            <td>departmentNumber</td>
+                            <td>Department identifier</td>
+                            <td>IT-001</td>
+                            <td>Optional</td>
+                        </tr>
+                        <tr>
+                            <td>o</td>
+                            <td>Organization name</td>
+                            <td>Tech Solutions Inc</td>
+                            <td>Optional</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="icon small-icon">⚠️</span>Avoiding Schema Issues</h3>
+            
+            <div class="error-box">
+                <h4>Common Schema Problems:</h4>
+                <ul class="error-list">
+                    <li><strong>Custom Attributes:</strong> Using non-standard attributes like "department" instead of "departmentNumber"</li>
+                    <li><strong>Missing Object Classes:</strong> Not specifying required object classes</li>
+                    <li><strong>Attribute Conflicts:</strong> Using attributes not allowed by the object class</li>
+                    <li><strong>Syntax Violations:</strong> Data that doesn't match attribute syntax rules</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h4>✅ Schema Best Practices:</h4>
+                <ul class="checklist">
+                    <li>Always use RFC-standard attributes when possible</li>
+                    <li>Test schema changes in development environment first</li>
+                    <li>Document any custom schema extensions</li>
+                    <li>Validate data against schema before import</li>
+                    <li>Keep schema changes minimal and well-documented</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🎯</span>Quick Reference & Summary</h2>
+            
+            <h3><span class="icon small-icon">📋</span>Import Success Checklist</h3>
+            <div class="info-box">
+                <h4>Before Every Import:</h4>
+                <ol>
+                    <li>✅ Directory structure exists (DC → OU → entries)</li>
+                    <li>✅ LDIF uses RFC-compliant attributes</li>
+                    <li>✅ All DNs are properly formatted</li>
+                    <li>✅ Required attributes present (dn, objectClass, cn, sn)</li>
+                    <li>✅ No duplicate entries</li>
+                    <li>✅ LDAP Admin connection tested</li>
+                    <li>✅ Backup created</li>
+                </ol>
+            </div>
+
+            <h3><span class="icon small-icon">🚀</span>Quick Start Guide</h3>
+            <ol class="step-list">
+                <li>
+                    <strong>Connect to LDAP Server</strong>
+                    <p>Configure LDAP Admin connection with server details and admin credentials.</p>
+                </li>
+                <li>
+                    <strong>Create Directory Structure</strong>
+                    <p>Create DC (domain) and OU (organizational unit) containers manually.</p>
+                </li>
+                <li>
+                    <strong>Prepare LDIF Data</strong>
+                    <p>Use the LDIF converter to generate RFC-compliant LDIF from Excel.</p>
+                </li>
+                <li>
+                    <strong>Import LDIF File</strong>
+                    <p>Use LDAP Admin's import function with proper error handling enabled.</p>
+                </li>
+                <li>
+                    <strong>Verify Results</strong>
+                    <p>Check import logs and verify entries appear correctly in the directory.</p>
+                </li>
+            </ol>
+
+            <h3><span class="icon small-icon">📞</span>Need More Help?</h3>
+            <div class="info-box">
+                <p><strong>Additional Resources:</strong></p>
+                <ul>
+                    <li><strong>LDAP Admin Documentation:</strong> <a href="http://www.ldapadmin.org/download/ldapadmin.html" target="_blank">Official Documentation</a></li>
+                    <li><strong>RFC 4519:</strong> LDAP Schema for User Applications</li>
+                    <li><strong>OpenLDAP Documentation:</strong> <a href="https://www.openldap.org/doc/" target="_blank">OpenLDAP.org</a></li>
+                    <li><strong>LDIF Format Specification:</strong> RFC 2849</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 12px;">
+            <h3>🎉 Congratulations!</h3>
+            <p>You now have the knowledge to successfully set up LDAP directory structures and import data using LDAP Admin. Remember to always test in a development environment first and maintain regular backups.</p>
+            <a href="index.html" class="nav-button">← Return to LDIF Converter</a>
+        </div>
+    </div>
+</body>
+</html>

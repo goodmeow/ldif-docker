@@ -256,10 +256,32 @@
         </div>
 
         <div class="section">
-            <h2><span class="icon">📚</span>LDAP Admin Setup Guide</h2>
+            <h2><span class="icon">📚</span>LDAP Admin Setup & Tutorial</h2>
             
+            <div style="background: #e7f3ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #007bff;">
+                <h4>🎓 Complete LDAP Admin Setup Tutorial</h4>
+                <p>Need help setting up LDAP directory structures and importing data? We've created a comprehensive tutorial that covers everything you need to know!</p>
+                
+                <div style="margin: 20px 0; text-align: center;">
+                    <a href="ldap-tutorial.html" style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                        📖 Open Complete LDAP Tutorial
+                    </a>
+                </div>
+                
+                <h4>📋 What You'll Learn:</h4>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>✅ How to connect to LDAP servers using LDAP Admin</li>
+                    <li>✅ Setting up proper directory structures (DC, OU, entries)</li>
+                    <li>✅ Common import errors and how to fix them</li>
+                    <li>✅ Step-by-step import process with detailed instructions</li>
+                    <li>✅ Advanced troubleshooting and debugging techniques</li>
+                    <li>✅ Security best practices and performance optimization</li>
+                    <li>✅ Schema management and RFC-compliant attributes</li>
+                </ul>
+            </div>
+
             <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107;">
-                <h4>⚠️ Common LDAP Import Errors & Solutions</h4>
+                <h4>⚠️ Quick Error Reference</h4>
                 
                 <div style="margin: 15px 0;">
                     <strong>Error: "A valid dn line is required"</strong><br>
@@ -270,57 +292,14 @@
                     <strong>Error: "No such object" (LDAP_NO_SUCH_OBJECT)</strong><br>
                     <span style="color: #666;">Solution: Create parent containers in LDAP Admin first</span>
                 </div>
-            </div>
-
-            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4>🔧 Setting up LDAP Directory Structure in LDAP Admin</h4>
                 
-                <div style="margin-bottom: 15px;">
-                    <strong>Step 1: Create Domain Component (DC)</strong>
-                    <ol style="margin: 8px 0; padding-left: 20px;">
-                        <li>Right-click on LDAP server → New → Entry</li>
-                        <li>Select "dcObject" and "organization" object classes</li>
-                        <li>Set DN: <code>dc=company,dc=local</code></li>
-                        <li>Add attributes: <code>dc=company</code>, <code>o=company</code></li>
-                    </ol>
+                <div style="margin: 15px 0;">
+                    <strong>Error: "Undefined attribute type"</strong><br>
+                    <span style="color: #666;">Solution: Use RFC-compliant attributes or load required schemas</span>
                 </div>
-
-                <div style="margin-bottom: 15px;">
-                    <strong>Step 2: Create Organizational Unit (OU)</strong>
-                    <ol style="margin: 8px 0; padding-left: 20px;">
-                        <li>Right-click on <code>dc=company,dc=local</code> → New → Entry</li>
-                        <li>Select "organizationalUnit" object class</li>
-                        <li>Set DN: <code>ou=users,dc=company,dc=local</code></li>
-                        <li>Add attribute: <code>ou=users</code></li>
-                    </ol>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <strong>Step 3: Verify DN Format in Excel</strong>
-                    <ul style="margin: 8px 0; padding-left: 20px;">
-                        <li>✅ Correct: <code>cn=John Smith,ou=users,dc=company,dc=local</code></li>
-                        <li>❌ Wrong: <code>John Smith</code> (missing DN format)</li>
-                        <li>❌ Wrong: <code>cn=John Smith</code> (missing parent containers)</li>
-                    </ul>
-                </div>
-
-                <div style="background: white; padding: 10px; border-radius: 4px; border: 1px dashed #ddd;">
-                    <strong>Example DN Structure:</strong><br>
-                    <code>cn=John Smith,ou=users,dc=company,dc=local</code><br>
-                    <small style="color: #666;">✅ Standard LDAP directory structure format</small>
-                </div>
-            </div>
-
-            <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4>🎯 Import Order for Success</h4>
-                <ol style="margin: 8px 0; padding-left: 20px;">
-                    <li><strong>First:</strong> Create domain and OU structure in LDAP Admin (manually)</li>
-                    <li><strong>Then:</strong> Import your user LDIF file</li>
-                    <li><strong>Verify:</strong> Check that parent containers exist before importing users</li>
-                </ol>
                 
-                <div style="margin-top: 10px; font-size: 0.9em; color: #0c5460;">
-                    💡 <strong>Pro Tip:</strong> Always create the directory structure manually in LDAP Admin first, then import your user data.
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.7); border-radius: 4px;">
+                    <strong>💡 Quick Fix:</strong> Always create directory structure (DC → OU) in LDAP Admin before importing user data!
                 </div>
             </div>
         </div>
