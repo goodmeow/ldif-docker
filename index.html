@@ -279,7 +279,35 @@
         </div>
 
         <div class="section">
-            <h2><span class="icon">4</span>Preview & Results</h2>
+            <h2><span class="icon">4</span>Batch Processing</h2>
+            <p>Process multiple files at once for bulk conversions:</p>
+            
+            <div class="file-input">
+                <label for="batchFiles" class="file-label">Choose Multiple Files</label>
+                <input type="file" id="batchFiles" accept=".xlsx,.xls,.csv,.ldif,.txt" multiple>
+                <span id="batchFileCount" style="margin-left: 15px; color: #cccccc;"></span>
+            </div>
+            
+            <div id="batchControls" style="display: none; margin-top: 15px;">
+                <button onclick="processBatchFiles()" id="processBatch">Process All Files</button>
+                <button onclick="clearBatchFiles()" id="clearBatch">Clear Selection</button>
+            </div>
+            
+            <div id="batchProgress" style="display: none; margin-top: 15px;">
+                <div style="background: #333333; border-radius: 4px; overflow: hidden; height: 20px;">
+                    <div id="progressBar" style="background: #00ff41; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                </div>
+                <div id="progressText" style="margin-top: 5px; color: #cccccc; font-size: 0.9em;"></div>
+            </div>
+            
+            <div id="batchResults" style="display: none; margin-top: 15px;">
+                <h4 style="color: #00ff41;">Batch Processing Results:</h4>
+                <div id="batchResultsList"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">5</span>Preview & Results</h2>
             <div id="previewSection" style="display: none;">
                 <div id="previewTable"></div>
             </div>
@@ -287,15 +315,18 @@
         </div>
 
         <div class="section">
-            <h2><span class="icon">📚</span>LDAP Admin Setup & Tutorial</h2>
+            <h2><span class="icon">6</span>LDAP Admin Setup & Tutorial</h2>
             
             <div style="background: rgba(0, 255, 65, 0.1); padding: 20px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #00ff41; color: #cccccc;">
                 <h4 style="color: #00ff41;">🎓 Complete LDAP Admin Setup Tutorial</h4>
                 <p>Need help setting up LDAP directory structures and importing data? We've created a comprehensive tutorial that covers everything you need to know!</p>
                 
                 <div style="margin: 20px 0; text-align: center;">
-                    <a href="ldap-tutorial.html" style="display: inline-block; padding: 15px 30px; background: #00ff41; color: #000000; text-decoration: none; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">
-                        📖 Open Complete LDAP Tutorial
+                    <a href="ldap-tutorial.html" style="display: inline-block; padding: 15px 30px; background: #00ff41; color: #000000; text-decoration: none; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); font-family: 'Consolas', 'Monaco', 'Courier New', monospace; margin: 5px;">
+                        📖 Complete LDAP Tutorial
+                    </a>
+                    <a href="features.html" style="display: inline-block; padding: 15px 30px; background: #00ff41; color: #000000; text-decoration: none; border-radius: 4px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); font-family: 'Consolas', 'Monaco', 'Courier New', monospace; margin: 5px;">
+                        🚀 Advanced Features Guide
                     </a>
                 </div>
                 
@@ -477,14 +508,94 @@
             return true;
         }
 
+        function validatePhoneNumber(phone) {
+            if (!phone) return true; // Optional field
+            
+            // Remove all non-digit characters except + and spaces
+            const cleanPhone = phone.replace(/[^\d+\s()-]/g, '');
+            
+            // Check for common international formats
+            const phonePatterns = [
+                /^\+\d{1,3}[\s-]?\d{1,14}$/, // International format
+                /^\d{10}$/, // US format (10 digits)
+                /^\(\d{3}\)\s?\d{3}-?\d{4}$/, // US format with parentheses
+                /^\d{3}[-.\s]?\d{3}[-.\s]?\d{4}$/, // US format with separators
+                /^\+\d{1,3}[\s-]?\(\d{1,4}\)[\s-]?\d{1,10}$/ // International with area code
+            ];
+            
+            return phonePatterns.some(pattern => pattern.test(cleanPhone));
+        }
+
+        function validateEmail(email) {
+            if (!email) return true; // Optional field
+            
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email.trim());
+        }
+
+        function detectDuplicates(headers, dataRows) {
+            const duplicates = [];
+            const dnIndex = headers.findIndex(h => h.toLowerCase() === 'dn');
+            const mailIndex = headers.findIndex(h => h.toLowerCase() === 'mail');
+            const cnIndex = headers.findIndex(h => h.toLowerCase() === 'cn');
+            
+            const seenDNs = new Map();
+            const seenEmails = new Map();
+            const seenCNs = new Map();
+            
+            dataRows.forEach((row, index) => {
+                if (!row.some(cell => cell)) return; // Skip empty rows
+                
+                const rowNum = index + 2;
+                
+                // Check DN duplicates
+                if (dnIndex >= 0 && row[dnIndex]) {
+                    const dn = row[dnIndex].toString().trim().toLowerCase();
+                    if (seenDNs.has(dn)) {
+                        duplicates.push(`Row ${rowNum}: Duplicate DN "${row[dnIndex]}" (first seen in row ${seenDNs.get(dn)})`);
+                    } else {
+                        seenDNs.set(dn, rowNum);
+                    }
+                }
+                
+                // Check email duplicates
+                if (mailIndex >= 0 && row[mailIndex]) {
+                    const email = row[mailIndex].toString().trim().toLowerCase();
+                    if (seenEmails.has(email)) {
+                        duplicates.push(`Row ${rowNum}: Duplicate email "${row[mailIndex]}" (first seen in row ${seenEmails.get(email)})`);
+                    } else {
+                        seenEmails.set(email, rowNum);
+                    }
+                }
+                
+                // Check CN duplicates (warning only, as CNs can be similar)
+                if (cnIndex >= 0 && row[cnIndex]) {
+                    const cn = row[cnIndex].toString().trim().toLowerCase();
+                    if (seenCNs.has(cn)) {
+                        duplicates.push(`Row ${rowNum}: Potential duplicate CN "${row[cnIndex]}" (first seen in row ${seenCNs.get(cn)}) - Review if this is intentional`);
+                    } else {
+                        seenCNs.set(cn, rowNum);
+                    }
+                }
+            });
+            
+            return duplicates;
+        }
+
         function validateLdifData(headers, dataRows) {
             const errors = [];
+            const warnings = [];
             const dnIndex = headers.findIndex(h => h.toLowerCase() === 'dn');
             const cnIndex = headers.findIndex(h => h.toLowerCase() === 'cn');
             const snIndex = headers.findIndex(h => h.toLowerCase() === 'sn');
             const givenNameIndex = headers.findIndex(h => h.toLowerCase() === 'givenname');
             const objectClassIndex = headers.findIndex(h => h.toLowerCase() === 'objectclass');
             const mailIndex = headers.findIndex(h => h.toLowerCase() === 'mail');
+            const phoneIndex = headers.findIndex(h => h.toLowerCase() === 'telephonenumber');
+
+            // Check for duplicates first
+            const duplicates = detectDuplicates(headers, dataRows);
+            errors.push(...duplicates);
 
             dataRows.forEach((row, index) => {
                 if (!row.some(cell => cell)) return; // Skip empty rows
@@ -513,17 +624,30 @@
                     if (cn && sn && givenName && sn === givenName) {
                         errors.push(`Row ${rowNum}: sn (surname) "${sn}" should not be the same as givenName "${givenName}"`);
                     }
+                    
+                    // Check if CN matches givenName + sn pattern
+                    if (cn && sn && givenName && cn !== `${givenName} ${sn}`) {
+                        warnings.push(`Row ${rowNum}: CN "${cn}" doesn't follow "givenName sn" pattern ("${givenName} ${sn}")`);
+                    }
                 }
 
-                // Check email format
+                // Enhanced email validation
                 if (mailIndex >= 0 && row[mailIndex]) {
                     const email = row[mailIndex].toString().trim();
-                    if (email && !email.includes('@')) {
+                    if (!validateEmail(email)) {
                         errors.push(`Row ${rowNum}: Invalid email format "${email}"`);
                     }
                 }
 
-                // Check DN format
+                // Phone number validation
+                if (phoneIndex >= 0 && row[phoneIndex]) {
+                    const phone = row[phoneIndex].toString().trim();
+                    if (!validatePhoneNumber(phone)) {
+                        errors.push(`Row ${rowNum}: Invalid phone number format "${phone}" - use international format like +1-555-123-4567`);
+                    }
+                }
+
+                // Enhanced DN format validation
                 if (dnIndex >= 0 && row[dnIndex]) {
                     const dn = row[dnIndex].toString().trim();
                     if (dn && !dn.includes('=')) {
@@ -531,12 +655,24 @@
                     } else if (dn && !dn.includes(',')) {
                         errors.push(`Row ${rowNum}: Incomplete DN "${dn}" - missing parent containers (e.g., cn=John,ou=users,dc=rmh,dc=local)`);
                     }
+                    
+                    // Check for invalid characters in DN
+                    if (dn && /[<>"#]/.test(dn)) {
+                        errors.push(`Row ${rowNum}: DN contains invalid characters "${dn}" - avoid < > " # characters`);
+                    }
                 } else if (dnIndex >= 0) {
                     errors.push(`Row ${rowNum}: Missing DN (Distinguished Name) - required for LDAP import`);
                 }
             });
 
-            return errors;
+            // Combine errors and warnings
+            const allIssues = [...errors];
+            if (warnings.length > 0) {
+                allIssues.push('', '⚠️ WARNINGS (non-critical):');
+                allIssues.push(...warnings);
+            }
+
+            return allIssues;
         }
 
         function generateParentEntries(headers, dataRows) {
@@ -737,6 +873,225 @@
         function showStatus(message, type) {
             const output = document.getElementById('output');
             output.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // Batch Processing Functions
+        let batchFiles = [];
+
+        document.getElementById('batchFiles').addEventListener('change', function(e) {
+            batchFiles = Array.from(e.target.files);
+            const batchFileCount = document.getElementById('batchFileCount');
+            const batchControls = document.getElementById('batchControls');
+            
+            if (batchFiles.length > 0) {
+                batchFileCount.textContent = `${batchFiles.length} files selected`;
+                batchControls.style.display = 'block';
+            } else {
+                batchFileCount.textContent = '';
+                batchControls.style.display = 'none';
+            }
+        });
+
+        function clearBatchFiles() {
+            batchFiles = [];
+            document.getElementById('batchFiles').value = '';
+            document.getElementById('batchFileCount').textContent = '';
+            document.getElementById('batchControls').style.display = 'none';
+            document.getElementById('batchProgress').style.display = 'none';
+            document.getElementById('batchResults').style.display = 'none';
+        }
+
+        async function processBatchFiles() {
+            if (batchFiles.length === 0) return;
+
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const batchProgress = document.getElementById('batchProgress');
+            const batchResults = document.getElementById('batchResults');
+            const batchResultsList = document.getElementById('batchResultsList');
+
+            batchProgress.style.display = 'block';
+            batchResults.style.display = 'block';
+            batchResultsList.innerHTML = '';
+
+            const results = [];
+            let processedCount = 0;
+
+            for (let i = 0; i < batchFiles.length; i++) {
+                const file = batchFiles[i];
+                const progress = ((i + 1) / batchFiles.length) * 100;
+                
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Processing ${file.name} (${i + 1}/${batchFiles.length})`;
+
+                try {
+                    const result = await processFile(file);
+                    results.push({
+                        filename: file.name,
+                        status: 'success',
+                        message: result.message,
+                        data: result.data
+                    });
+                    processedCount++;
+                } catch (error) {
+                    results.push({
+                        filename: file.name,
+                        status: 'error',
+                        message: error.message
+                    });
+                }
+
+                // Small delay to show progress
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            progressText.textContent = `Completed: ${processedCount}/${batchFiles.length} files processed successfully`;
+            displayBatchResults(results);
+        }
+
+        function processFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                reader.onload = function(e) {
+                    try {
+                        if (['ldif', 'txt'].includes(fileExtension)) {
+                            // Process LDIF file
+                            const ldifData = e.target.result;
+                            const entries = parseLdif(ldifData);
+                            
+                            const allAttrs = new Set();
+                            entries.forEach(entry => {
+                                Object.keys(entry).forEach(attr => allAttrs.add(attr));
+                            });
+                            
+                            const headers = Array.from(allAttrs);
+                            const rows = [headers];
+                            
+                            entries.forEach(entry => {
+                                const row = headers.map(header => {
+                                    const value = entry[header];
+                                    if (Array.isArray(value)) {
+                                        return value.join('; ');
+                                    }
+                                    return value || '';
+                                });
+                                rows.push(row);
+                            });
+                            
+                            const wb = XLSX.utils.book_new();
+                            const ws = XLSX.utils.aoa_to_sheet(rows);
+                            XLSX.utils.book_append_sheet(wb, ws, 'LDIF Data');
+                            
+                            const outputFilename = file.name.replace(/\.(ldif|txt)$/i, '_converted.xlsx');
+                            XLSX.writeFile(wb, outputFilename);
+                            
+                            resolve({
+                                message: `Converted ${entries.length} LDIF entries to Excel`,
+                                data: { entries: entries.length, filename: outputFilename }
+                            });
+                            
+                        } else if (['xlsx', 'xls', 'csv'].includes(fileExtension)) {
+                            // Process Excel/CSV file
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, {type: 'array'});
+                            const firstSheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[firstSheetName];
+                            const excelData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                            
+                            if (excelData.length === 0) {
+                                reject(new Error('Empty file'));
+                                return;
+                            }
+                            
+                            const headers = excelData[0];
+                            const dataRows = excelData.slice(1);
+                            
+                            // Validate data
+                            const dataErrors = validateLdifData(headers, dataRows);
+                            let ldifOutput = '';
+                            
+                            const parentEntries = generateParentEntries(headers, dataRows);
+                            if (parentEntries) {
+                                ldifOutput += parentEntries + '\n';
+                            }
+                            
+                            dataRows.forEach((row, index) => {
+                                if (row.some(cell => cell)) {
+                                    headers.forEach((header, colIndex) => {
+                                        const value = row[colIndex];
+                                        if (value && value.toString().trim()) {
+                                            ldifOutput += `${header}: ${value}\n`;
+                                        }
+                                    });
+                                    ldifOutput += '\n';
+                                }
+                            });
+                            
+                            const blob = new Blob([ldifOutput], { type: 'text/plain' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            const outputFilename = file.name.replace(/\.(xlsx|xls|csv)$/i, '_converted.ldif');
+                            a.download = outputFilename;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            
+                            let message = `Converted ${dataRows.length} Excel rows to LDIF`;
+                            if (dataErrors.length > 0) {
+                                message += ` (${dataErrors.length} validation warnings)`;
+                            }
+                            
+                            resolve({
+                                message: message,
+                                data: { rows: dataRows.length, filename: outputFilename, warnings: dataErrors.length }
+                            });
+                        } else {
+                            reject(new Error('Unsupported file format'));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+
+                reader.onerror = function() {
+                    reject(new Error('Failed to read file'));
+                };
+
+                if (['ldif', 'txt'].includes(fileExtension)) {
+                    reader.readAsText(file);
+                } else {
+                    reader.readAsArrayBuffer(file);
+                }
+            });
+        }
+
+        function displayBatchResults(results) {
+            const batchResultsList = document.getElementById('batchResultsList');
+            let html = '';
+            
+            const successCount = results.filter(r => r.status === 'success').length;
+            const errorCount = results.filter(r => r.status === 'error').length;
+            
+            html += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(0, 255, 65, 0.1); border-radius: 4px; border: 1px solid rgba(0, 255, 65, 0.3);">`;
+            html += `<strong style="color: #00ff41;">Summary:</strong> ${successCount} successful, ${errorCount} failed`;
+            html += `</div>`;
+            
+            results.forEach(result => {
+                const statusColor = result.status === 'success' ? '#00ff41' : '#ff4444';
+                const statusIcon = result.status === 'success' ? '✅' : '❌';
+                
+                html += `<div style="margin-bottom: 10px; padding: 10px; background: #1a1a1a; border-radius: 4px; border-left: 4px solid ${statusColor};">`;
+                html += `<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">`;
+                html += `<span>${statusIcon}</span>`;
+                html += `<strong style="color: ${statusColor};">${result.filename}</strong>`;
+                html += `</div>`;
+                html += `<div style="color: #cccccc; font-size: 0.9em;">${result.message}</div>`;
+                html += `</div>`;
+            });
+            
+            batchResultsList.innerHTML = html;
         }
     </script>
 </body>

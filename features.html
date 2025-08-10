@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Advanced Features Documentation - LDIF Converter</title>
+    <style>
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000000;
+            min-height: 100vh;
+            color: #00ff41;
+            line-height: 1.6;
+        }
+        .container {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            border: 1px solid #1a1a1a;
+        }
+        h1 {
+            color: #00ff41;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+        h2 {
+            color: #00ff41;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #00ff41;
+            padding-bottom: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        }
+        h3 {
+            color: #00ff41;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 8px;
+            background: #111111;
+            border: 1px solid #333333;
+        }
+        .feature-box {
+            background: rgba(0, 255, 65, 0.1);
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            color: #cccccc;
+        }
+        .feature-box h4 {
+            color: #00ff41;
+            margin-top: 0;
+        }
+        .code-block {
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            color: #00ff41;
+        }
+        .nav-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #00ff41;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 10px 10px 10px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #00ff41;
+        }
+        .nav-button:hover {
+            background: #000000;
+            color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            text-decoration: none;
+        }
+        ul, ol {
+            color: #cccccc;
+        }
+        p {
+            color: #cccccc;
+        }
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+            color: #cccccc;
+        }
+        .checklist li::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Advanced Features Documentation</h1>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="index.html" class="nav-button">← Back to LDIF Converter</a>
+            <a href="ldap-tutorial.html" class="nav-button">📖 LDAP Tutorial</a>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Advanced Data Validation</h2>
+            
+            <div class="feature-box">
+                <h4>Enhanced Validation Features</h4>
+                <p>The LDIF converter now includes comprehensive data validation to ensure your LDAP imports are successful:</p>
+                
+                <ul class="checklist">
+                    <li><strong>Duplicate Detection:</strong> Automatically detects duplicate DNs, emails, and common names</li>
+                    <li><strong>Phone Number Validation:</strong> Validates international phone number formats</li>
+                    <li><strong>Enhanced Email Validation:</strong> Improved email format checking with RFC compliance</li>
+                    <li><strong>DN Format Validation:</strong> Checks for invalid characters and proper DN structure</li>
+                    <li><strong>Name Consistency Checks:</strong> Validates that CN follows "givenName sn" pattern</li>
+                    <li><strong>Warning System:</strong> Separates critical errors from non-critical warnings</li>
+                </ul>
+            </div>
+
+            <h3>Validation Examples</h3>
+            
+            <div class="code-block">
+# Phone Number Validation - Supported Formats:
++1-555-123-4567     ✅ International format
+(555) 123-4567      ✅ US format with parentheses
+555.123.4567        ✅ US format with dots
++44 20 7946 0958    ✅ UK international format
+
+# Email Validation:
+john.smith@company.com     ✅ Valid
+john@company              ❌ Missing domain extension
+@company.com              ❌ Missing username
+
+# DN Validation:
+cn=John Smith,ou=users,dc=company,dc=local  ✅ Valid
+cn=John<Smith>,ou=users,dc=company,dc=local ❌ Invalid characters
+cn=John Smith                               ❌ Missing parent containers
+            </div>
+
+            <h3>Duplicate Detection</h3>
+            <p>The system now automatically detects:</p>
+            <ul>
+                <li><strong>DN Duplicates:</strong> Critical error - prevents LDAP import failures</li>
+                <li><strong>Email Duplicates:</strong> Critical error - ensures unique email addresses</li>
+                <li><strong>CN Duplicates:</strong> Warning only - may be intentional in some cases</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📦 Batch Processing</h2>
+            
+            <div class="feature-box">
+                <h4>Process Multiple Files Simultaneously</h4>
+                <p>The new batch processing feature allows you to convert multiple files at once, saving time and effort:</p>
+                
+                <ul class="checklist">
+                    <li><strong>Multi-File Selection:</strong> Select multiple LDIF, Excel, or CSV files</li>
+                    <li><strong>Progress Tracking:</strong> Real-time progress bar and status updates</li>
+                    <li><strong>Mixed Format Support:</strong> Process different file types in the same batch</li>
+                    <li><strong>Individual Results:</strong> Detailed results for each file processed</li>
+                    <li><strong>Error Handling:</strong> Continue processing even if some files fail</li>
+                    <li><strong>Automatic Downloads:</strong> Converted files are automatically downloaded</li>
+                </ul>
+            </div>
+
+            <h3>How to Use Batch Processing</h3>
+            <ol>
+                <li><strong>Select Files:</strong> Click "Choose Multiple Files" and select your files</li>
+                <li><strong>Review Selection:</strong> Check the file count and file types</li>
+                <li><strong>Process:</strong> Click "Process All Files" to start batch conversion</li>
+                <li><strong>Monitor Progress:</strong> Watch the progress bar and status messages</li>
+                <li><strong>Review Results:</strong> Check the results summary for success/failure counts</li>
+            </ol>
+
+            <h3>Supported File Types</h3>
+            <div class="code-block">
+Input Files:
+• .ldif - LDAP Data Interchange Format files
+• .txt  - Text files containing LDIF data
+• .xlsx - Excel 2007+ format
+• .xls  - Legacy Excel format
+• .csv  - Comma-separated values
+
+Output Files:
+• LDIF → Excel: filename_converted.xlsx
+• Excel → LDIF: filename_converted.ldif
+            </div>
+
+            <h3>Batch Processing Benefits</h3>
+            <ul>
+                <li><strong>Time Saving:</strong> Process dozens of files in minutes</li>
+                <li><strong>Consistency:</strong> Same validation rules applied to all files</li>
+                <li><strong>Reliability:</strong> Individual file failures don't stop the batch</li>
+                <li><strong>Audit Trail:</strong> Complete results log for each file</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Technical Implementation</h2>
+            
+            <h3>Validation Engine</h3>
+            <div class="code-block">
+// Phone Number Validation Patterns
+const phonePatterns = [
+    /^\+\d{1,3}[\s-]?\d{1,14}$/,           // International
+    /^\d{10}$/,                            // US 10-digit
+    /^\(\d{3}\)\s?\d{3}-?\d{4}$/,         // US with parentheses
+    /^\d{3}[-.\s]?\d{3}[-.\s]?\d{4}$/,    // US with separators
+    /^\+\d{1,3}[\s-]?\(\d{1,4}\)[\s-]?\d{1,10}$/ // International with area
+];
+
+// Email Validation
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// DN Character Validation
+const invalidDNChars = /[<>"#]/;
+            </div>
+
+            <h3>Batch Processing Architecture</h3>
+            <ul>
+                <li><strong>Asynchronous Processing:</strong> Non-blocking file processing</li>
+                <li><strong>Promise-based:</strong> Proper error handling and flow control</li>
+                <li><strong>Memory Efficient:</strong> Processes files one at a time</li>
+                <li><strong>Progress Tracking:</strong> Real-time updates during processing</li>
+            </ul>
+
+            <h3>Performance Considerations</h3>
+            <ul>
+                <li><strong>File Size Limits:</strong> Handles files up to 50MB (configurable)</li>
+                <li><strong>Processing Speed:</strong> ~1000 entries per second typical</li>
+                <li><strong>Memory Usage:</strong> Optimized for large datasets</li>
+                <li><strong>Browser Compatibility:</strong> Works in all modern browsers</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Configuration & Customization</h2>
+            
+            <h3>Validation Settings</h3>
+            <p>The validation system can be customized by modifying the JavaScript functions:</p>
+            
+            <div class="code-block">
+// Add custom phone number patterns
+phonePatterns.push(/your-custom-pattern/);
+
+// Modify email validation
+function validateEmail(email) {
+    // Your custom email validation logic
+    return customEmailPattern.test(email);
+}
+
+// Add custom LDAP attributes
+const customAttributes = [
+    'customAttribute1', 'customAttribute2'
+];
+standardAttributes.push(...customAttributes);
+            </div>
+
+            <h3>Batch Processing Limits</h3>
+            <div class="code-block">
+// Configurable limits
+const MAX_BATCH_SIZE = 50;        // Maximum files per batch
+const MAX_FILE_SIZE = 52428800;   // 50MB per file
+const PROCESSING_DELAY = 100;     // Delay between files (ms)
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚨 Troubleshooting</h2>
+            
+            <h3>Common Validation Issues</h3>
+            <div class="feature-box">
+                <h4>Duplicate Detection False Positives</h4>
+                <p><strong>Issue:</strong> System reports duplicates that seem different</p>
+                <p><strong>Solution:</strong> Check for extra spaces, different cases, or hidden characters</p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Phone Number Validation Failures</h4>
+                <p><strong>Issue:</strong> Valid phone numbers are rejected</p>
+                <p><strong>Solution:</strong> Use international format (+country-area-number) or standard US format</p>
+            </div>
+
+            <div class="feature-box">
+                <h4>Batch Processing Stops</h4>
+                <p><strong>Issue:</strong> Batch processing halts unexpectedly</p>
+                <p><strong>Solution:</strong> Check browser console for errors, reduce batch size, or process files individually</p>
+            </div>
+
+            <h3>Performance Tips</h3>
+            <ul>
+                <li><strong>Large Files:</strong> Process large files individually for better performance</li>
+                <li><strong>Memory Issues:</strong> Close other browser tabs during batch processing</li>
+                <li><strong>Network:</strong> Ensure stable internet connection for file downloads</li>
+                <li><strong>Browser:</strong> Use Chrome or Firefox for best performance</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(0, 255, 65, 0.1); border-radius: 4px; border: 1px solid rgba(0, 255, 65, 0.3);">
+            <h3 style="color: #00ff41;">🎯 Ready to Use Advanced Features?</h3>
+            <p style="color: #cccccc;">Start using the enhanced LDIF converter with advanced validation and batch processing capabilities.</p>
+            <a href="index.html" class="nav-button">🚀 Launch LDIF Converter</a>
+        </div>
+    </div>
+</body>
+</html>
