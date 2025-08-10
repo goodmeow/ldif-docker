@@ -3,57 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Complete LDAP Admin Setup & Directory Structure Tutorial</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             line-height: 1.6;
+            color: #00ff41;
         }
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
+            background: #0a0a0a;
+            border-radius: 8px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            border: 1px solid #1a1a1a;
         }
         h1 {
-            color: #2c3e50;
+            color: #00ff41;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         }
         h2 {
-            color: #495057;
+            color: #00ff41;
             margin-top: 40px;
             margin-bottom: 20px;
             font-size: 1.8em;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #00ff41;
             padding-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 15px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
         }
         h3 {
-            color: #495057;
+            color: #00ff41;
             margin-top: 30px;
             margin-bottom: 15px;
             font-size: 1.4em;
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
         }
         h4 {
-            color: #495057;
+            color: #00ff41;
             margin-top: 25px;
             margin-bottom: 12px;
             font-size: 1.2em;
@@ -61,63 +65,88 @@
         .section {
             margin-bottom: 40px;
             padding: 25px;
-            border-radius: 12px;
-            background: rgba(248, 249, 250, 0.8);
-            border: 1px solid rgba(222, 226, 230, 0.5);
+            border-radius: 8px;
+            background: #111111;
+            border: 1px solid #333333;
         }
         .icon {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
+            background: #00ff41;
+            border-radius: 4px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #000000;
             font-weight: bold;
             font-size: 1.2em;
+            box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
         }
         .small-icon {
             width: 24px;
             height: 24px;
             font-size: 1em;
         }
+        p, li {
+            color: #cccccc;
+        }
         .warning-box {
-            background: #fff3cd;
+            background: rgba(255, 165, 0, 0.1);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin: 20px 0;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid #ffaa00;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            color: #cccccc;
+        }
+        .warning-box h3, .warning-box h4 {
+            color: #ffaa00;
         }
         .info-box {
-            background: #e7f3ff;
+            background: rgba(0, 255, 65, 0.1);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin: 20px 0;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            color: #cccccc;
+        }
+        .info-box h3, .info-box h4 {
+            color: #00ff41;
         }
         .success-box {
-            background: #d1ecf1;
+            background: rgba(0, 255, 65, 0.1);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin: 20px 0;
-            border-left: 4px solid #17a2b8;
+            border-left: 4px solid #00ff41;
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            color: #cccccc;
+        }
+        .success-box h3, .success-box h4 {
+            color: #00ff41;
         }
         .error-box {
-            background: #f8d7da;
+            background: rgba(255, 0, 0, 0.1);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin: 20px 0;
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid #ff4444;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #cccccc;
+        }
+        .error-box h3, .error-box h4 {
+            color: #ff4444;
         }
         .code-block {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 4px;
             padding: 15px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             margin: 15px 0;
             overflow-x: auto;
+            color: #00ff41;
         }
         .step-list {
             counter-reset: step-counter;
@@ -128,75 +157,89 @@
             counter-increment: step-counter;
             margin-bottom: 20px;
             padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            background: #1a1a1a;
+            border-radius: 4px;
+            border-left: 4px solid #00ff41;
             position: relative;
+            color: #cccccc;
         }
         .step-list li::before {
             content: counter(step-counter);
             position: absolute;
             left: -15px;
             top: 15px;
-            background: #667eea;
-            color: white;
+            background: #00ff41;
+            color: #000000;
             width: 30px;
             height: 30px;
-            border-radius: 50%;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
         }
         .step-list li strong {
-            color: #495057;
+            color: #00ff41;
             display: block;
             margin-bottom: 8px;
         }
         .nav-button {
             display: inline-block;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: #00ff41;
+            color: #000000;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 4px;
             font-weight: 500;
             transition: all 0.3s ease;
             margin: 10px 10px 10px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid #00ff41;
         }
         .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            background: #000000;
+            color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
             text-decoration: none;
-            color: white;
         }
         .table-container {
             overflow-x: auto;
             margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            background: white;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
+            background: #111111;
+            border: 1px solid #333333;
         }
         .tutorial-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+            background: #111111;
             margin: 0;
+            color: #cccccc;
         }
         .tutorial-table th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: #000000;
+            color: #00ff41;
             padding: 15px;
             text-align: left;
             font-weight: 600;
+            border-bottom: 1px solid #333333;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         }
         .tutorial-table td {
             padding: 12px 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #333333;
             vertical-align: top;
         }
         .tutorial-table tr:hover {
-            background-color: rgba(102, 126, 234, 0.05);
+            background-color: rgba(0, 255, 65, 0.05);
+        }
+        .tutorial-table code {
+            background: #000000;
+            color: #00ff41;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         }
         .checklist {
             list-style: none;
@@ -207,6 +250,7 @@
             padding: 8px 0;
             position: relative;
             padding-left: 30px;
+            color: #cccccc;
         }
         .checklist li::before {
             content: "✅";
@@ -218,15 +262,15 @@
             content: "❌";
         }
         .toc {
-            background: white;
+            background: #111111;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-bottom: 30px;
-            border: 2px solid #e9ecef;
+            border: 1px solid #333333;
         }
         .toc h3 {
             margin-top: 0;
-            color: #495057;
+            color: #00ff41;
         }
         .toc ul {
             list-style: none;
@@ -236,14 +280,33 @@
             margin-bottom: 8px;
         }
         .toc a {
-            color: #667eea;
+            color: #00ff41;
             text-decoration: none;
             padding: 5px 0;
             display: block;
+            transition: all 0.3s ease;
         }
         .toc a:hover {
-            color: #764ba2;
-            text-decoration: underline;
+            color: #cccccc;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+        strong {
+            color: #00ff41;
+        }
+        code {
+            background: #000000;
+            color: #00ff41;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        a {
+            color: #00ff41;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            color: #cccccc;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
         }
     </style>
 </head>
@@ -1038,9 +1101,9 @@ ldapmodify -n -f your_file.ldif
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 12px;">
-            <h3>🎉 Congratulations!</h3>
-            <p>You now have the knowledge to successfully set up LDAP directory structures and import data using LDAP Admin. Remember to always test in a development environment first and maintain regular backups.</p>
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(0, 255, 65, 0.1); border-radius: 4px; border: 1px solid rgba(0, 255, 65, 0.3);">
+            <h3 style="color: #00ff41;">🎉 Congratulations!</h3>
+            <p style="color: #cccccc;">You now have the knowledge to successfully set up LDAP directory structures and import data using LDAP Admin. Remember to always test in a development environment first and maintain regular backups.</p>
             <a href="index.html" class="nav-button">← Return to LDIF Converter</a>
         </div>
     </div>
